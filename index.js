@@ -8,6 +8,8 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import userSchema from './schemas/User.schema.js';
+import validateCreate from './validators/user.js';
+
 const app = express();
 
 mongoose.set('strictQuery',false);
@@ -21,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 
-app.post('/credentials', asyncHandler(async function(req,res){
+app.post('/credentials', validateCreate, asyncHandler(async function(req,res){
   const {username, password} = req.body;
   const user = await User.findOne({username: username});
   if(user){
@@ -36,6 +38,7 @@ app.post('/credentials', asyncHandler(async function(req,res){
         }
         }
       ));
+    }else{
       res.status(401).send({error: "invalid password"});  
     }
   }else{
